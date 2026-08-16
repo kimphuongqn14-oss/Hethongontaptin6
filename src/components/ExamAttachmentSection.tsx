@@ -41,7 +41,7 @@ export const ExamAttachmentSection: React.FC<ExamAttachmentSectionProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChapterFilter, setSelectedChapterFilter] = useState<number | 'all'>('all');
 
-  const isAdminOrTeacher = currentUser?.role === 'admin' || currentUser?.role === 'teacher';
+  const isAdmin = currentUser?.role === 'admin';
 
   const filteredAttachments = attachments.filter((item) => {
     const matchSearch =
@@ -122,26 +122,28 @@ export const ExamAttachmentSection: React.FC<ExamAttachmentSectionProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {isAdminOrTeacher && (
-            <button
-              id="btnResetDefaultExamAttachments"
-              type="button"
-              onClick={onResetDefaultAttachments}
-              className="text-xs px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
-              title="Khôi phục các đề thi mẫu ban đầu"
-            >
-              <RotateCcw className="w-3.5 h-3.5" /> Khôi Phục Mẫu
-            </button>
-          )}
+          {isAdmin && (
+            <>
+              <button
+                id="btnResetDefaultExamAttachments"
+                type="button"
+                onClick={onResetDefaultAttachments}
+                className="text-xs px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                title="Khôi phục các đề thi mẫu ban đầu"
+              >
+                <RotateCcw className="w-3.5 h-3.5" /> Khôi Phục Mẫu
+              </button>
 
-          <button
-            id="btnOpenUploadExamAttachment"
-            type="button"
-            onClick={onOpenUploadModal}
-            className="text-xs px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" /> Đính Kèm Tệp Đề Mới
-          </button>
+              <button
+                id="btnOpenUploadExamAttachment"
+                type="button"
+                onClick={onOpenUploadModal}
+                className="text-xs px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" /> Đính Kèm Tệp Đề Mới (Admin)
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -285,7 +287,7 @@ export const ExamAttachmentSection: React.FC<ExamAttachmentSectionProps> = ({
                     <span className="hidden sm:inline">Tải</span>
                   </button>
 
-                  {isAdminOrTeacher && (
+                  {isAdmin && (
                     <button
                       type="button"
                       onClick={() => {
@@ -295,7 +297,7 @@ export const ExamAttachmentSection: React.FC<ExamAttachmentSectionProps> = ({
                         }
                       }}
                       className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition cursor-pointer"
-                      title="Xóa tệp đính kèm"
+                      title="Xóa tệp đính kèm (Chỉ Admin)"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

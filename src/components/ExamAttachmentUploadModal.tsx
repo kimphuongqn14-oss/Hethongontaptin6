@@ -138,6 +138,12 @@ export const ExamAttachmentUploadModal: React.FC<ExamAttachmentUploadModalProps>
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (currentUser?.role !== 'admin') {
+      playSound('wrong');
+      setErrorMessage('Quyền truy cập bị từ chối: Chỉ tài khoản Quản trị viên (Admin) mới có quyền đính kèm tệp đề thi mới!');
+      return;
+    }
+
     if (!file && !textContent.trim()) {
       setErrorMessage('Vui lòng đính kèm một tệp tin đề thi hoặc nhập nội dung đề!');
       return;
@@ -160,7 +166,7 @@ export const ExamAttachmentUploadModal: React.FC<ExamAttachmentUploadModalProps>
       fileType,
       fileSize,
       uploadedAt: new Date().toLocaleString('vi-VN'),
-      uploadedBy: currentUser?.name || 'Cô Phạm Thị Kim Phượng',
+      uploadedBy: currentUser?.name || 'Quản Trị Viên Hệ Thống',
       targetChapters: selectedChapters,
       description: description.trim() || 'Tài liệu đề thi thử môn Tin học 6 - THCS Nguyễn Bá Loan.',
       dataUrl: fileDataUrl || undefined,
@@ -210,6 +216,13 @@ export const ExamAttachmentUploadModal: React.FC<ExamAttachmentUploadModalProps>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+          {currentUser?.role !== 'admin' && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+              <span>Chức năng này chỉ dành cho <strong>Quản Trị Viên (Admin)</strong>. Vui lòng đăng nhập tài khoản Admin để có quyền tải lên đề thi.</span>
+            </div>
+          )}
+
           {errorMessage && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
