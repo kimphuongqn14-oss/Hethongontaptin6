@@ -1,0 +1,6 @@
+{
+  "name": "Hệ Thống Ôn Tập Tin Học 6",
+  "description": "Hệ thống ôn tập Tin học 6 Kết nối tri thức: luyện trắc nghiệm, tự luận, thi thử 45 phút, quản lý ngân hàng câu hỏi, đăng nhập admin và trợ lý AI Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
