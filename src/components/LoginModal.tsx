@@ -22,7 +22,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   // Student Form
   const [studentUsername, setStudentUsername] = useState<string>('');
   const [studentPassword, setStudentPassword] = useState<string>('');
-  const [studentClass, setStudentClass] = useState<string>('Lớp 6A');
+  const [studentClass, setStudentClass] = useState<string>('Lớp 6A1');
   const [studentAvatar, setStudentAvatar] = useState<string>('🎓');
   const [studentLoginError, setStudentLoginError] = useState<string | null>(null);
 
@@ -36,7 +36,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [regUsername, setRegUsername] = useState<string>('');
   const [regPassword, setRegPassword] = useState<string>('');
   const [regConfirmPassword, setRegConfirmPassword] = useState<string>('');
-  const [regClass, setRegClass] = useState<string>('Lớp 6A');
+  const [regClass, setRegClass] = useState<string>('Lớp 6A1');
   const [regAvatar, setRegAvatar] = useState<string>('🎓');
   const [regError, setRegError] = useState<string | null>(null);
   const [regSuccess, setRegSuccess] = useState<boolean>(false);
@@ -291,12 +291,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                       onChange={(e) => setStudentClass(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                      <option value="Lớp 6A">Lớp 6A</option>
-                      <option value="Lớp 6B">Lớp 6B</option>
-                      <option value="Lớp 6C">Lớp 6C</option>
-                      <option value="Lớp 6D">Lớp 6D</option>
-                      <option value="Lớp 6E">Lớp 6E</option>
-                      <option value="Lớp 6G">Lớp 6G</option>
+                      <option value="Lớp 6A1">Lớp 6A1</option>
+                      <option value="Lớp 6A2">Lớp 6A2</option>
+                      <option value="Lớp 6A3">Lớp 6A3</option>
+                      <option value="Lớp 6A4">Lớp 6A4</option>
+                      <option value="Lớp 6A5">Lớp 6A5</option>
+                      <option value="Lớp 6A6">Lớp 6A6</option>
+                      <option value="Lớp 6A7">Lớp 6A7</option>
+                      <option value="Lớp 6A8">Lớp 6A8</option>
                     </select>
                   </div>
                   <div>
@@ -491,12 +493,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                       onChange={(e) => setRegClass(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     >
-                      <option value="Lớp 6A">Lớp 6A</option>
-                      <option value="Lớp 6B">Lớp 6B</option>
-                      <option value="Lớp 6C">Lớp 6C</option>
-                      <option value="Lớp 6D">Lớp 6D</option>
-                      <option value="Lớp 6E">Lớp 6E</option>
-                      <option value="Lớp 6G">Lớp 6G</option>
+                      <option value="Lớp 6A1">Lớp 6A1</option>
+                      <option value="Lớp 6A2">Lớp 6A2</option>
+                      <option value="Lớp 6A3">Lớp 6A3</option>
+                      <option value="Lớp 6A4">Lớp 6A4</option>
+                      <option value="Lớp 6A5">Lớp 6A5</option>
+                      <option value="Lớp 6A6">Lớp 6A6</option>
+                      <option value="Lớp 6A7">Lớp 6A7</option>
+                      <option value="Lớp 6A8">Lớp 6A8</option>
                     </select>
                   </div>
                   <div>

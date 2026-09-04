@@ -102,7 +102,7 @@ export const TabStats: React.FC<TabStatsProps> = ({
   const [newStudentName, setNewStudentName] = useState<string>('');
   const [newStudentUsername, setNewStudentUsername] = useState<string>('');
   const [newStudentPassword, setNewStudentPassword] = useState<string>('123456');
-  const [newStudentClass, setNewStudentClass] = useState<string>('Lớp 6A');
+  const [newStudentClass, setNewStudentClass] = useState<string>('Lớp 6A1');
   const [newStudentAvatar, setNewStudentAvatar] = useState<string>('🎓');
 
   // Password Visibility Toggle State
@@ -883,12 +883,14 @@ export const TabStats: React.FC<TabStatsProps> = ({
                   className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="all">Tất cả các lớp</option>
-                  <option value="Lớp 6A">Lớp 6A</option>
-                  <option value="Lớp 6B">Lớp 6B</option>
-                  <option value="Lớp 6C">Lớp 6C</option>
-                  <option value="Lớp 6D">Lớp 6D</option>
-                  <option value="Lớp 6E">Lớp 6E</option>
-                  <option value="Lớp 6G">Lớp 6G</option>
+                  <option value="Lớp 6A1">Lớp 6A1</option>
+                  <option value="Lớp 6A2">Lớp 6A2</option>
+                  <option value="Lớp 6A3">Lớp 6A3</option>
+                  <option value="Lớp 6A4">Lớp 6A4</option>
+                  <option value="Lớp 6A5">Lớp 6A5</option>
+                  <option value="Lớp 6A6">Lớp 6A6</option>
+                  <option value="Lớp 6A7">Lớp 6A7</option>
+                  <option value="Lớp 6A8">Lớp 6A8</option>
                 </select>
               </div>
 
@@ -1123,12 +1125,14 @@ export const TabStats: React.FC<TabStatsProps> = ({
                   className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-3 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="all">Tất cả các lớp</option>
-                  <option value="Lớp 6A">Lớp 6A</option>
-                  <option value="Lớp 6B">Lớp 6B</option>
-                  <option value="Lớp 6C">Lớp 6C</option>
-                  <option value="Lớp 6D">Lớp 6D</option>
-                  <option value="Lớp 6E">Lớp 6E</option>
-                  <option value="Lớp 6G">Lớp 6G</option>
+                  <option value="Lớp 6A1">Lớp 6A1</option>
+                  <option value="Lớp 6A2">Lớp 6A2</option>
+                  <option value="Lớp 6A3">Lớp 6A3</option>
+                  <option value="Lớp 6A4">Lớp 6A4</option>
+                  <option value="Lớp 6A5">Lớp 6A5</option>
+                  <option value="Lớp 6A6">Lớp 6A6</option>
+                  <option value="Lớp 6A7">Lớp 6A7</option>
+                  <option value="Lớp 6A8">Lớp 6A8</option>
                 </select>
               </div>
             </div>
@@ -1350,12 +1354,14 @@ export const TabStats: React.FC<TabStatsProps> = ({
                     onChange={(e) => setNewStudentClass(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   >
-                    <option value="Lớp 6A">Lớp 6A</option>
-                    <option value="Lớp 6B">Lớp 6B</option>
-                    <option value="Lớp 6C">Lớp 6C</option>
-                    <option value="Lớp 6D">Lớp 6D</option>
-                    <option value="Lớp 6E">Lớp 6E</option>
-                    <option value="Lớp 6G">Lớp 6G</option>
+                    <option value="Lớp 6A1">Lớp 6A1</option>
+                    <option value="Lớp 6A2">Lớp 6A2</option>
+                    <option value="Lớp 6A3">Lớp 6A3</option>
+                    <option value="Lớp 6A4">Lớp 6A4</option>
+                    <option value="Lớp 6A5">Lớp 6A5</option>
+                    <option value="Lớp 6A6">Lớp 6A6</option>
+                    <option value="Lớp 6A7">Lớp 6A7</option>
+                    <option value="Lớp 6A8">Lớp 6A8</option>
                   </select>
                 </div>
                 <div>
