@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -14,14 +16,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       temperature = 0.7,
       topic = 'Toàn bộ chương trình Tin học 6',
       image,
+      ktContent: customKt,
+      tcContent: customTc,
     } = req.body || {};
 
     if (!message && !image) {
       return res.status(400).json({ error: 'Message or image is required' });
     }
 
+    // Read kt.md and tc.md from disk if not explicitly passed
+    let diskKt = '';
+    let diskTc = '';
+    try {
+      const ktPath = path.resolve(process.cwd(), 'kt.md');
+      const tcPath = path.resolve(process.cwd(), 'tc.md');
+      if (fs.existsSync(ktPath)) diskKt = fs.readFileSync(ktPath, 'utf-8');
+      if (fs.existsSync(tcPath)) diskTc = fs.readFileSync(tcPath, 'utf-8');
+    } catch (e) {
+      // Ignored if on read-only or serverless without cwd file
+    }
+
+    const ktContent = (typeof customKt === 'string' && customKt.trim()) ? customKt : diskKt;
+    const tcContent = (typeof customTc === 'string' && customTc.trim()) ? customTc : diskTc;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(200).json({
+        reply: `⚠️ **Chưa cấu hình biến môi trường GEMINI_API_KEY trên Vercel!**\n\nĐể kích hoạt Trợ lý AI trên Vercel:\n1. Mở **Vercel Dashboard** → Chọn dự án của bạn.\n2. Vào mục **Settings** → **Environment Variables**.\n3. Thêm biến mới:\n   • **Key:** \`GEMINI_API_KEY\`\n   • **Value:** *(Dán API Key Gemini của bạn từ [Google AI Studio](https://aistudio.google.com/apikey))*\n4. Sau đó vào **Deployments** → bấm nút **Redeploy** để Vercel cập nhật biến mới.\n\nSau khi redeploy, Trợ lý AI sẽ hoạt động ngay lập tức! ✨`,
+      });
+    }
+
     const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || '',
+      apiKey,
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build-vercel',
@@ -32,30 +58,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let personaInstruction = '';
     switch (persona) {
       case 'teacher_5512':
-        personaInstruction = `Bạn là Chuyên gia Giáo dục & Giáo viên Tin học THCS xuất sắc, chuyên soạn Kế hoạch bài dạy (Giáo án) theo chuẩn Công văn 5512/BGDĐT và chương trình GDPT 2018 (SGK Kết nối tri thức với cuộc sống).
-Khi soạn giáo án, tuân thủ đúng 4 hoạt động:
-1. Hoạt động 1: Khởi động.
-2. Hoạt động 2: Hình thành kiến thức mới.
-3. Hoạt động 3: Luyện tập.
-4. Hoạt động 4: Vận dụng.
-Trình bày khoa học, rõ ràng bằng bảng biểu và Markdown sư phạm chuẩn mực.`;
+        personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Sư phạm THCS, chuyên soạn Kế hoạch bài dạy (Giáo án) theo chuẩn Công văn 5512/BGDĐT-GDTrH.
+Tuân thủ đầy đủ: Tên bài dạy, I. Mục tiêu (Kiến thức, Năng lực, Phẩm chất), II. Thiết bị dạy học và học liệu, III. Tiến trình dạy học chuẩn 4 hoạt động 5512 (Khởi động, Hình thành kiến thức, Luyện tập, Vận dụng), mỗi hoạt động đủ 4 bước (Chuyển giao, Thực hiện, Báo cáo thảo luận, Kết luận nhận định).`;
         break;
       case 'stem_expert':
-        personaInstruction = `Bạn là Chuyên gia Phương pháp Dạy học tích hợp & Giáo dục STEM Tin học cấp THCS.
-Nhiệm vụ: Thiết kế các dự án học tập, hoạt động trải nghiệm STEM sáng tạo gắn liền với đời sống thực tế cho học sinh lớp 6.`;
+        personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Phương pháp Dạy học tích hợp STEM Tin học cấp THCS.`;
         break;
       case 'exam_evaluator':
-        personaInstruction = `Bạn là Chuyên gia Khảo thí và Kiểm định chất lượng giáo dục môn Tin học THCS.
-Nhiệm vụ: Xây dựng Ma trận đề kiểm tra, Bản đặc tả đề thi theo 4 mức độ nhận thức (Nhận biết, Thông hiểu, Vận dụng, Vận dụng cao) và câu hỏi chuẩn hóa bám sát chuẩn đầu ra GDPT 2018.`;
+        personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Khảo thí và Kiểm định chất lượng giáo dục.
+Xây dựng khung ma trận đề kiểm tra, bảng đặc tả, đề kiểm tra chính thức (3 phần: Trắc nghiệm khách quan, Trắc nghiệm Đúng/Sai hoặc Trả lời ngắn, Tự luận) và barem thang điểm chi tiết.`;
         break;
       case 'friendly_tutor':
       default:
-        personaInstruction = `Bạn là Trợ giảng AI Tin học 6 thông minh, thân thiện, đồng hành cùng học sinh lứa tuổi 11-12 (Bộ sách Kết nối tri thức với cuộc sống).
-Giải thích dễ hiểu, dùng ngôn ngữ gần gũi, nhiều ví dụ thực tế và ẩn dụ sinh động trong đời sống.`;
+        personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại, người bạn đồng hành thông thái và ân cần của học sinh.
+Phương pháp: Dẫn dắt Socratic, gợi mở tư duy từng bước thay vì chỉ đưa ra đáp án cuối cùng.`;
         break;
     }
 
-    const systemInstruction = `${personaInstruction}\nPhạm vi chuyên môn đang tập trung: ${topic}.\nNgôn ngữ: Tiếng Việt chuẩn mực, sư phạm. Trình bày Markdown đẹp mắt.`;
+    const systemInstruction = `
+# QUY CHUẨN SƯ PHẠM (tc.md):
+${tcContent || personaInstruction}
+
+# VAI TRÒ ĐANG KÍCH HOẠT:
+${personaInstruction}
+
+# PHẠM VI CHUYÊN MÔN: ${topic}
+
+# KHO TRI THỨC BÀI HỌC (kt.md):
+${ktContent ? ktContent.slice(0, 10000) : "Chương trình Tin học 6 Kết nối tri thức và các bài học chuyên môn."}
+
+YÊU CẦU:
+- Bám sát kho tri thức kt.md và SGK Tin học 6, không tự ý bịa đặt.
+- Trình bày Markdown đẹp mắt, sư phạm chuẩn mực.
+`;
 
     const formattedContents: any[] = [];
     if (Array.isArray(history) && history.length > 0) {
@@ -86,7 +121,13 @@ Giải thích dễ hiểu, dùng ngôn ngữ gần gũi, nhiều ví dụ thực
       parts: userParts,
     });
 
-    const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-3.8-flash',
+      'gemini-flash-latest',
+    ];
     let reply = '';
     const validTemp = typeof temperature === 'number' ? Math.max(0, Math.min(1.2, temperature)) : 0.7;
 

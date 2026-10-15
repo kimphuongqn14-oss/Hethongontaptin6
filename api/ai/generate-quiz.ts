@@ -25,7 +25,13 @@ Yêu cầu:
 - Lời giải thích ngắn gọn, chính xác theo SGK.
 - Đảm bảo câu hỏi chất lượng, sát với kiến thức SGK Tin học 6 Kết nối tri thức.`;
 
-    const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-3.8-flash',
+      'gemini-flash-latest',
+    ];
     let questions: any[] = [];
 
     for (const model of modelsToTry) {

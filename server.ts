@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 
@@ -7,7 +8,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "25mb" }));
 
   // Initialize Gemini AI SDK lazily/safely
   const getGenAI = () => {
@@ -32,8 +33,10 @@ async function startServer() {
     requestFn: (modelName: string) => Promise<any>
   ) => {
     const modelsToTry = [
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
       "gemini-3.8-flash",
-      "gemini-3.1-flash-lite",
       "gemini-flash-latest",
     ];
 
@@ -65,7 +68,39 @@ async function startServer() {
     throw lastError;
   };
 
-  // AI Chat endpoint - Enhanced for KT.MD EdTech Pedagogical Engine
+  // Endpoints for kt.md and tc.md Knowledge & Pedagogical System Prompt Management
+  app.get("/api/get-md", (req, res) => {
+    try {
+      const ktPath = path.resolve(process.cwd(), "kt.md");
+      const tcPath = path.resolve(process.cwd(), "tc.md");
+      const ktContent = fs.existsSync(ktPath) ? fs.readFileSync(ktPath, "utf-8") : "";
+      const tcContent = fs.existsSync(tcPath) ? fs.readFileSync(tcPath, "utf-8") : "";
+      res.json({ ktContent, tcContent });
+    } catch (err: any) {
+      console.error("Error reading md files:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/save-md", (req, res) => {
+    try {
+      const { ktContent, tcContent } = req.body;
+      const ktPath = path.resolve(process.cwd(), "kt.md");
+      const tcPath = path.resolve(process.cwd(), "tc.md");
+      if (typeof ktContent === "string") {
+        fs.writeFileSync(ktPath, ktContent, "utf-8");
+      }
+      if (typeof tcContent === "string") {
+        fs.writeFileSync(tcPath, tcContent, "utf-8");
+      }
+      res.json({ success: true, message: "Đã lưu thành công vào ổ cứng (kt.md & tc.md)" });
+    } catch (err: any) {
+      console.error("Error saving md files:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // AI Chat endpoint - Enhanced with kt.md & tc.md integration
   app.post("/api/ai/chat", async (req, res) => {
     try {
       const {
@@ -75,44 +110,81 @@ async function startServer() {
         temperature = 0.7,
         topic = "Toàn bộ chương trình Tin học 6",
         image,
+        ktContent: customKt,
+        tcContent: customTc,
       } = req.body;
 
       if (!message && !image) {
         return res.status(400).json({ error: "Message or image is required" });
       }
 
+      // Load active kt.md and tc.md from disk if not explicitly passed
+      const ktPath = path.resolve(process.cwd(), "kt.md");
+      const tcPath = path.resolve(process.cwd(), "tc.md");
+      const diskKt = fs.existsSync(ktPath) ? fs.readFileSync(ktPath, "utf-8") : "";
+      const diskTc = fs.existsSync(tcPath) ? fs.readFileSync(tcPath, "utf-8") : "";
+
+      const activeKt = (typeof customKt === "string" && customKt.trim()) ? customKt : diskKt;
+      const activeTc = (typeof customTc === "string" && customTc.trim()) ? customTc : diskTc;
+
       const ai = getGenAI();
 
-      // Custom system instructions based on pedagogical persona
+      // Custom system instructions based on pedagogical persona and tc.md
       let personaInstruction = "";
       switch (persona) {
         case "teacher_5512":
-          personaInstruction = `Bạn là Chuyên gia Giáo dục & Giáo viên Tin học THCS xuất sắc, chuyên soạn Kế hoạch bài dạy (Giáo án) theo chuẩn Công văn 5512/BGDĐT và chương trình GDPT 2018 (SGK Kết nối tri thức với cuộc sống).
-Khi soạn giáo án, tuân thủ đúng 4 hoạt động:
-1. Hoạt động 1: Khởi động (Mục tiêu, Nội dung, Sản phẩm, Tổ chức thực hiện: Chuyển giao - Thực hiện - Báo cáo/Thảo luận - Kết luận/Nhận định).
-2. Hoạt động 2: Hình thành kiến thức mới.
-3. Hoạt động 3: Luyện tập.
-4. Hoạt động 4: Vận dụng.
-Trình bày khoa học, rõ ràng bằng bảng biểu và Markdown sư phạm chuẩn mực.`;
+          personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Sư phạm THCS, chuyên soạn Kế hoạch bài dạy (Giáo án) theo chuẩn Công văn 5512/BGDĐT-GDTrH và chương trình GDPT 2018 (bộ SGK Kết nối tri thức).
+Khi người dùng yêu cầu soạn giáo án, kế hoạch bài dạy:
+BẮT BUỘC trình bày đầy đủ:
+TÊN BÀI DẠY: [TÊN BÀI] - Môn: [Tên môn] - Lớp: [Lớp] - Thời lượng: [...]
+I. MỤC TIÊU:
+1. Kiến thức: Liệt kê rõ các kiến thức cốt lõi.
+2. Năng lực: Năng lực chung & Năng lực Tin học/đặc thù.
+3. Phẩm chất: Yêu nước, nhân ái, chăm chỉ, trung thực, trách nhiệm.
+II. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU: 1. Giáo viên, 2. Học sinh.
+III. TIẾN TRÌNH DẠY HỌC (CHUẨN 4 HOẠT ĐỘNG 5512):
+- Hoạt động 1: Mở đầu / Khởi động (Mục tiêu, Nội dung, Sản phẩm, Tổ chức thực hiện 4 bước: Chuyển giao -> Thực hiện -> Báo cáo thảo luận -> Kết luận nhận định).
+- Hoạt động 2: Hình thành kiến thức mới (đầy đủ 4 bước a, b, c, d).
+- Hoạt động 3: Luyện tập (đầy đủ 4 bước a, b, c, d).
+- Hoạt động 4: Vận dụng (đầy đủ 4 bước a, b, c, d).`;
           break;
         case "stem_expert":
-          personaInstruction = `Bạn là Chuyên gia Phương pháp Dạy học tích hợp & Giáo dục STEM Tin học cấp THCS.
-Nhiệm vụ: Thiết kế các dự án học tập, hoạt động trải nghiệm STEM sáng tạo gắn liền với đời sống thực tế cho học sinh lớp 6. Nêu rõ: Vấn đề thực tiễn, Kiến thức nền liên môn, Tiêu chí sản phẩm, Kế hoạch thực hiện từng bước và Bảng tiêu chí đánh giá (Rubric).`;
+          personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Phương pháp Dạy học tích hợp STEM Tin học.
+Nhiệm vụ: Thiết kế các dự án học tập, hoạt động trải nghiệm STEM sáng tạo gắn liền với thực tế cho học sinh. Nêu rõ vấn đề thực tiễn, kiến thức nền liên môn, tiêu chí sản phẩm, các bước thực hiện và rubric chấm điểm.`;
           break;
         case "exam_evaluator":
-          personaInstruction = `Bạn là Chuyên gia Khảo thí và Kiểm định chất lượng giáo dục môn Tin học THCS.
-Nhiệm vụ: Xây dựng Ma trận đề kiểm tra, Bản đặc tả đề thi theo 4 mức độ nhận thức (Nhận biết 40%, Thông hiểu 30%, Vận dụng 20%, Vận dụng cao 10%) và tạo các bộ câu hỏi trắc nghiệm/tự luận chuẩn hóa, bám sát yêu cầu cần đạt chương trình Tin học 6 GDPT 2018. Luôn kèm đáp án và hướng dẫn chấm chi tiết.`;
+          personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & Chuyên gia Khảo thí và Kiểm định chất lượng giáo dục.
+Khi người dùng yêu cầu tạo đề kiểm tra, ma trận đề, BẮT BUỘC trình bày đầy đủ 4 phần chuẩn Bộ GD&ĐT:
+1. KHUNG MA TRẬN ĐỀ KIỂM TRA (Dạng bảng Markdown chuẩn): TT | Chủ đề / Nội dung kiến thức | Nhận biết (TNKQ/TL) | Thông hiểu (TNKQ/TL) | Vận dụng (TNKQ/TL) | Vận dụng cao (TL) | Tổng số câu | Tổng điểm | Tỉ lệ %
+2. BẢNG ĐẶC TẢ ĐỀ KIỂM TRA (Dạng bảng Markdown chuẩn): TT | Đơn vị kiến thức | Mức độ đánh giá | Yêu cầu cần đạt | Số câu hỏi theo mức độ
+3. ĐỀ KIỂM TRA CHÍNH THỨC: Phần I: Trắc nghiệm khách quan 4 lựa chọn (A, B, C, D); Phần II: Trắc nghiệm Đúng/Sai hoặc Trả lời ngắn theo định dạng mới Bộ GD&ĐT; Phần III: Tự luận phân hóa tư duy.
+4. ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM: Bảng đáp án trắc nghiệm rõ ràng; Barem thang điểm chi tiết từng bước cho câu hỏi tự luận.`;
           break;
         case "friendly_tutor":
         default:
-          personaInstruction = `Bạn là Trợ giảng AI Tin học 6 thông minh, thân thiện, đồng hành cùng học sinh lứa tuổi 11-12 (Bộ sách Kết nối tri thức với cuộc sống).
-Giải thích dễ hiểu, dùng ngôn ngữ gần gũi, nhiều ví dụ thực tế và ẩn dụ sinh động trong đời sống. Khuyến khích, động viên học sinh và chia sẻ các mẹo nhớ lâu, kỹ năng thao tác máy tính an toàn, hiệu quả.`;
+          personaInstruction = `Bạn là Trợ Lý Giáo Dục Hiện Đại & người bạn đồng hành thông thái, ân cần của học sinh lớp 6.
+- Ngôn ngữ: Tiếng Việt chuẩn mực, truyền cảm hứng, gần gũi và chuẩn mực sư phạm GD&ĐT.
+- Phương pháp: Dẫn dắt Socratic, gợi mở tư duy từng bước thay vì chỉ đưa ra đáp án cuối cùng. Động viên, khuyến khích học sinh, giải thích trực quan, dễ hiểu bằng ẩn dụ sinh động trong đời sống.`;
           break;
       }
 
-      const systemInstruction = `${personaInstruction}
-Phạm vi chuyên môn đang tập trung: ${topic}.
-Ngôn ngữ: Tiếng Việt chuẩn mực, sư phạm. Sử dụng Markdown đẹp mắt (tiêu đề, in đậm, danh sách gạch đầu dòng, bảng biểu khoa học khi phù hợp).`;
+      // Build composite system instruction incorporating tc.md and kt.md
+      const systemInstruction = `
+# QUY CHUẨN SƯ PHẠM & TÍNH CÁCH (tc.md):
+${activeTc || personaInstruction}
+
+# VAI TRÒ ĐANG KÍCH HOẠT:
+${personaInstruction}
+
+# PHẠM VI CHUYÊN MÔN: ${topic}
+
+# KHO TRI THỨC BÀI HỌC THAM CHIẾU (kt.md):
+${activeKt ? activeKt.slice(0, 10000) : "Chương trình Tin học 6 Kết nối tri thức và các bài học chuyên môn."}
+
+YÊU CẦU ĐẶC BIỆT:
+- Tuyệt đối bám sát nội dung bài học trong kho tri thức kt.md và SGK Tin học 6, không tự ý bịa đặt.
+- Trình bày Markdown sư phạm đẹp mắt, sử dụng bảng biểu khoa học, tiêu đề rõ ràng, ký hiệu toán/tin học chuẩn xác.
+`;
 
       // Format conversation contents
       const formattedContents = [];

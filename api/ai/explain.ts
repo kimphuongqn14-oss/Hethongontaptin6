@@ -75,7 +75,13 @@ ${studentAnswer ? '3. Nhận xét ngắn gọn 1 câu về câu trả lời củ
     const systemInstruction = `Bạn là Giáo viên AI bộ môn Tin học 6 - SGK Kết nối tri thức với cuộc sống.
 Nhiệm vụ: Giải thích đáp án trắc nghiệm hoặc tự luận CỰC KỲ NGẮN GỌN, trọng tâm, súc tích, dễ nhớ cho học sinh lớp 6 (11-12 tuổi). Tuyệt đối không dài dòng.`;
 
-    const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-3.8-flash',
+      'gemini-flash-latest',
+    ];
     let explanation = '';
 
     for (const model of modelsToTry) {

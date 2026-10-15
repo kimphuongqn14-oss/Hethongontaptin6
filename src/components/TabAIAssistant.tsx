@@ -26,6 +26,7 @@ import {
   BookOpen,
   Sparkles,
 } from 'lucide-react';
+import { AdminKnowledgeModal } from './AdminKnowledgeModal';
 
 interface ChatMessage {
   id: string;
@@ -89,6 +90,9 @@ const CURRICULUM_TOPICS = [
   'Chủ đề D: Đạo đức, pháp luật và văn hóa trong môi trường số (An toàn thông tin)',
   'Chủ đề E: Ứng dụng tin học (Sơ đồ tư duy, Soạn thảo văn bản cơ bản)',
   'Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính (Thuật toán & Mô tả)',
+  '📚 [kt.md] Mầm non (5-6 tuổi): Sự kỳ diệu của đường (Khám phá khoa học)',
+  '📚 [kt.md] Toán học 9: Hệ thức Vi-ét và ứng dụng (Đại số 9 - GDPT 2018)',
+  '📚 [kt.md] Khoa học tự nhiên: Quang hợp ở thực vật (Sinh học & Tự nhiên)',
 ];
 
 
@@ -366,6 +370,37 @@ export const TabAIAssistant: React.FC<TabAIAssistantProps> = ({ onStartGenerated
   const [temperature, setTemperature] = useState<number>(0.7);
   const [showConfigPanel, setShowConfigPanel] = useState<boolean>(false);
 
+  // Knowledge Base & Pedagogy Rules (kt.md & tc.md)
+  const [isKnowledgeModalOpen, setIsKnowledgeModalOpen] = useState<boolean>(false);
+  const [ktContent, setKtContent] = useState<string>('');
+  const [tcContent, setTcContent] = useState<string>('');
+
+  // Load active kt.md and tc.md
+  useEffect(() => {
+    const loadKnowledge = async () => {
+      let loaded = false;
+      try {
+        const res = await fetch('/api/get-md');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ktContent) setKtContent(data.ktContent);
+          if (data.tcContent) setTcContent(data.tcContent);
+          loaded = true;
+        }
+      } catch (e) {
+        console.warn('API get-md unavailable, checking localStorage');
+      }
+
+      if (!loaded) {
+        const localKt = localStorage.getItem('ai_studio_kt_content');
+        const localTc = localStorage.getItem('ai_studio_tc_content');
+        if (localKt) setKtContent(localKt);
+        if (localTc) setTcContent(localTc);
+      }
+    };
+    loadKnowledge();
+  }, []);
+
   // Input & Status
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -531,6 +566,8 @@ export const TabAIAssistant: React.FC<TabAIAssistantProps> = ({ onStartGenerated
           temperature: isStudent ? 0.7 : (presetTemp !== undefined ? presetTemp : temperature),
           topic: activeTopic,
           image: attachedImage,
+          ktContent,
+          tcContent,
           history: updatedMessages.slice(-6).map((m) => ({
             role: m.role,
             text: m.text,
@@ -741,6 +778,15 @@ export const TabAIAssistant: React.FC<TabAIAssistantProps> = ({ onStartGenerated
             {/* Quick Header Actions */}
             <div className="flex flex-wrap items-center gap-2.5 self-stretch md:self-auto justify-end">
               <button
+                onClick={() => setIsKnowledgeModalOpen(true)}
+                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md transition flex items-center gap-2 border border-blue-400/30"
+                title="Quản lý kho tri thức bài học (kt.md) và quy chuẩn sư phạm (tc.md)"
+              >
+                <BookOpen className="w-4 h-4 text-cyan-300" />
+                <span>Tri Thức kt.md & tc.md</span>
+              </button>
+
+              <button
                 onClick={() => setShowConfigPanel(!showConfigPanel)}
                 className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition flex items-center gap-2 border shadow-sm ${
                   showConfigPanel
@@ -886,10 +932,13 @@ export const TabAIAssistant: React.FC<TabAIAssistantProps> = ({ onStartGenerated
           <div className="flex flex-wrap gap-2">
             {[
               '💡 Bit và Byte khác nhau thế nào?',
+              '🌱 Quang hợp ở thực vật diễn ra như thế nào?',
+              '📐 Định lý Vi-ét trong Toán 9 dùng để làm gì?',
+              '🌈 Thí nghiệm cầu vồng nước đường hoạt động ra sao?',
               '🌐 Mạng Internet là gì và đem lại lợi ích gì?',
-              '🛡️ Mẹo đặt mật khẩu an toàn và tránh mã độc?',
               '⚙️ Thuật toán là gì? Cho ví dụ trong đời sống',
               '🧠 Sơ đồ tư duy giúp ích gì khi ôn tập?',
+              '🛡️ Mẹo đặt mật khẩu an toàn và tránh mã độc?',
               '🔍 Cách tìm kiếm thông tin hiệu quả trên Google?',
             ].map((chip, idx) => (
               <button
@@ -1274,6 +1323,17 @@ export const TabAIAssistant: React.FC<TabAIAssistantProps> = ({ onStartGenerated
           </div>
         </div>
       </div>
+
+      {/* Admin / Teacher Knowledge Modal */}
+      <AdminKnowledgeModal
+        isOpen={isKnowledgeModalOpen}
+        onClose={() => setIsKnowledgeModalOpen(false)}
+        isAdminOrTeacher={!isStudent}
+        onSaved={(newKt, newTc) => {
+          setKtContent(newKt);
+          setTcContent(newTc);
+        }}
+      />
     </div>
   );
 };
