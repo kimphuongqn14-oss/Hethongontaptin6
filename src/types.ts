@@ -101,7 +101,6 @@ export interface ExamAttachment {
 export type TabId =
   | 'home'
   | 'lessons'
-  | 'chapters'
   | 'quiz-setup'
   | 'quiz-player'
   | 'quiz-result'

@@ -3,7 +3,6 @@ import { TabId } from '../types';
 import {
   Home,
   BookOpen,
-  Network,
   ListCheck,
   PenTool,
   Clock,
@@ -25,7 +24,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onSelectTab, isAdmin,
   const navItems: { id: TabId; label: string; icon: React.ReactNode; badge?: string; color?: string }[] = [
     { id: 'home', label: 'Trang Chủ', icon: <Home className="w-4 h-4" /> },
     { id: 'lessons', label: 'Ôn Tập Theo Bài', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'chapters', label: 'Ôn Tập Theo Chủ Đề', icon: <Network className="w-4 h-4" /> },
     { id: 'quiz-setup', label: 'Luyện Trắc Nghiệm', icon: <ListCheck className="w-4 h-4" /> },
     { id: 'essay', label: 'Câu Hỏi Tự Luận', icon: <PenTool className="w-4 h-4" /> },
     { id: 'mock-exam', label: 'Thi Thử 45 Phút', icon: <Clock className="w-4 h-4" /> },

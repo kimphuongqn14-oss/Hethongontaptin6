@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-2">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">Tính Năng Cốt Lõi</h4>
             <ul className="text-slate-400 text-xs space-y-1">
-              <li>• Ôn tập lý thuyết 15 Bài học & 6 Chủ đề lớn</li>
+              <li>• Ôn tập lý thuyết trọng tâm 15 Bài học Tin học 6</li>
               <li>• Ngân hàng trắc nghiệm & tự luận tự động chấm</li>
               <li>• Đề thi thử 45 phút & Trợ lý AI Gemini thông minh</li>
               <li>• Quản lý ngân hàng câu hỏi & Đăng nhập</li>

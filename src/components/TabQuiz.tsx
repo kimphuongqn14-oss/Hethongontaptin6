@@ -3,6 +3,7 @@ import { MCQQuestion, AttemptRecord, UserProfile } from '../types';
 import { playSound } from '../utils/audio';
 import { LeaderboardBoard } from './LeaderboardBoard';
 import { ExportResultModal, QuizResultData } from './ExportResultModal';
+import { AIExplanationBox } from './AIExplanationBox';
 import {
   Sliders,
   Play,
@@ -431,6 +432,18 @@ export const TabQuiz: React.FC<TabQuizProps> = ({
               <p className="text-slate-700 leading-relaxed">
                 {q.explanation || 'Đáp án chính xác theo chương trình SGK Tin học 6.'}
               </p>
+              <div className="pt-2">
+                <AIExplanationBox
+                  type="mcq"
+                  question={q.question}
+                  options={q.options}
+                  correctAnswer={q.correctAnswer}
+                  selectedAnswer={currentAns.selected}
+                  explanation={q.explanation}
+                  buttonText="✨ AI Giải Thích Ngắn Gọn"
+                  variant="badge"
+                />
+              </div>
             </div>
           )}
 
@@ -606,6 +619,18 @@ export const TabQuiz: React.FC<TabQuizProps> = ({
                       )}
                       <div className="text-slate-600 italic">
                         💡 {q.explanation || 'Giải thích kiến thức SGK'}
+                      </div>
+                      <div className="pt-1.5">
+                        <AIExplanationBox
+                          type="mcq"
+                          question={q.question}
+                          options={q.options}
+                          correctAnswer={q.correctAnswer}
+                          selectedAnswer={selectedIdx >= 0 ? selectedIdx : undefined}
+                          explanation={q.explanation}
+                          buttonText="✨ AI Giải Thích Ngắn Gọn"
+                          variant="inline"
+                        />
                       </div>
                     </div>
                   </div>

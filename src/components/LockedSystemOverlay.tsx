@@ -44,7 +44,7 @@ export const LockedSystemOverlay: React.FC<LockedSystemOverlayProps> = ({
           <span className="text-emerald-600 font-extrabold text-sm">✓</span> 15 Bài học SGK Tin 6
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-emerald-600 font-extrabold text-sm">✓</span> 6 Chủ đề Sơ đồ tư duy
+          <span className="text-emerald-600 font-extrabold text-sm">✓</span> Câu hỏi Tự luận chi tiết
         </div>
         <div className="flex items-center gap-2">
           <span className="text-emerald-600 font-extrabold text-sm">✓</span> Luyện tập Trắc nghiệm

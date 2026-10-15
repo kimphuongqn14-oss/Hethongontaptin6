@@ -31,7 +31,6 @@ import { Header } from './components/Header';
 import { Navbar } from './components/Navbar';
 import { TabHome } from './components/TabHome';
 import { TabLessons } from './components/TabLessons';
-import { TabChapters } from './components/TabChapters';
 import { TabQuiz } from './components/TabQuiz';
 import { TabEssay } from './components/TabEssay';
 import { TabMockExam } from './components/TabMockExam';
@@ -593,10 +592,6 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'chapters' && (
-              <TabChapters onStartQuizForLesson={handleStartQuizForLesson} />
-            )}
-
             {(activeTab === 'quiz-setup' || activeTab === 'quiz-player' || activeTab === 'quiz-result') && (
               <TabQuiz
                 questionBankMCQ={mcqBank}
@@ -663,7 +658,10 @@ export default function App() {
             )}
 
             {activeTab === 'ai-assistant' && (
-              <TabAIAssistant onStartGeneratedAIQuiz={handleStartGeneratedAIQuiz} />
+              <TabAIAssistant
+                currentUser={currentUser}
+                onStartGeneratedAIQuiz={handleStartGeneratedAIQuiz}
+              />
             )}
           </>
         )}

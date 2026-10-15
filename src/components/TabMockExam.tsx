@@ -7,6 +7,7 @@ import { ExportResultModal } from './ExportResultModal';
 import { ExamAttachmentSection } from './ExamAttachmentSection';
 import { ExamAttachmentPreviewModal } from './ExamAttachmentPreviewModal';
 import { ExamAttachmentUploadModal } from './ExamAttachmentUploadModal';
+import { AIExplanationBox } from './AIExplanationBox';
 import {
   Clock,
   FileCheck2,
@@ -480,6 +481,18 @@ export const TabMockExam: React.FC<TabMockExamProps> = ({
                         {q.explanation && (
                           <div className="text-slate-600 italic">💡 {q.explanation}</div>
                         )}
+                        <div className="pt-1.5">
+                          <AIExplanationBox
+                            type="mcq"
+                            question={q.question}
+                            options={q.options}
+                            correctAnswer={q.correctAnswer}
+                            selectedAnswer={sel}
+                            explanation={q.explanation}
+                            buttonText="✨ AI Giải Thích Ngắn Gọn"
+                            variant="inline"
+                          />
+                        </div>
                       </div>
                     </div>
                   );
@@ -511,6 +524,17 @@ export const TabMockExam: React.FC<TabMockExamProps> = ({
                           <strong>Gợi ý / Đáp án tham khảo:</strong> {eq.sampleAnswer}
                         </div>
                       )}
+                      <div className="pt-2">
+                        <AIExplanationBox
+                          type="essay"
+                          question={`${eq.title}: ${eq.question}`}
+                          hint={eq.hint}
+                          sampleAnswer={eq.sampleAnswer}
+                          studentAnswer={essayAnswers[idx]}
+                          buttonText="✨ AI Giải Thích & Nhận Xét"
+                          variant="card"
+                        />
+                      </div>
                     </div>
                   );
                 })}

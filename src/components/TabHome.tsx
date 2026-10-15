@@ -3,7 +3,6 @@ import { TabId } from '../types';
 import { playSound } from '../utils/audio';
 import {
   BookOpen,
-  Network,
   ListCheck,
   PenTool,
   Clock,
@@ -35,17 +34,6 @@ export const TabHome: React.FC<TabHomeProps> = ({ onSelectTab, isLoggedIn = true
       bgClass: 'from-white to-blue-50/40 hover:border-blue-500',
       iconBg: 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white',
       textColor: 'text-blue-600',
-    },
-    {
-      id: 'chapters' as TabId,
-      title: 'Ôn Tập Theo Chủ Đề',
-      desc: 'Khái quát 6 Chủ đề lớn qua sơ đồ tư duy tương tác giúp ghi nhớ trực quan kiến thức toàn khóa.',
-      count: '6 Chủ đề lớn',
-      icon: <Network className="w-7 h-7" />,
-      color: 'emerald',
-      bgClass: 'from-white to-emerald-50/40 hover:border-emerald-500',
-      iconBg: 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white',
-      textColor: 'text-emerald-600',
     },
     {
       id: 'quiz-setup' as TabId,

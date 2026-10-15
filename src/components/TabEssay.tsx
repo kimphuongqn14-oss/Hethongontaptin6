@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { EssayQuestion } from '../types';
 import { playSound } from '../utils/audio';
 import { PenTool, Lightbulb, CheckCheck, Plus, Trash2, Edit3 } from 'lucide-react';
+import { AIExplanationBox } from './AIExplanationBox';
 
 interface TabEssayProps {
   essayQuestions: EssayQuestion[];
@@ -125,19 +126,28 @@ export const TabEssay: React.FC<TabEssayProps> = ({
               ></textarea>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => toggleHint(q.id)}
-                className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs rounded-xl transition flex items-center gap-1.5"
+                className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
               >
                 <Lightbulb className="w-4 h-4 text-amber-600" /> Xem Gợi Ý
               </button>
               <button
                 onClick={() => revealAnswer(q.id)}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5"
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
               >
                 <CheckCheck className="w-4 h-4" /> Xem Đáp Án Mẫu
               </button>
+              <AIExplanationBox
+                type="essay"
+                question={`${q.title}: ${q.question}`}
+                hint={q.hint}
+                sampleAnswer={q.sampleAnswer}
+                studentAnswer={userInputs[q.id]}
+                buttonText="✨ AI Giải Thích Ngắn Gọn"
+                variant="card"
+              />
             </div>
 
             {showHints[q.id] && (
